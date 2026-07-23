@@ -1,0 +1,23 @@
+# Python / uv
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Flutter / Dart
+summative/FlutterApp/.dart_tool/
+summative/FlutterApp/build/
+summative/FlutterApp/.gradle/
+summative/FlutterApp/android/.gradle/
+summative/FlutterApp/android/local.properties
+summative/FlutterApp/.idea/
+summative/FlutterApp/ios/Flutter/ephemeral/
+summative/FlutterApp/macos/Flutter/ephemeral/
+*.iml
+
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# keep the trained model artifacts (best_model.pkl, metadata, training_data.csv)
+# so the API and Render deploy work without retraining
