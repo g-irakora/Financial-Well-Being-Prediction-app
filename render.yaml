@@ -1,0 +1,15 @@
+# Render deployment for the FastAPI prediction service.
+# On Render: New -> Blueprint, point it at this repo (it reads this file), or set
+# up a Web Service manually with the same rootDir / build / start commands.
+services:
+  - type: web
+    name: financial-wellbeing-api
+    runtime: python
+    rootDir: summative/API
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn prediction:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.13"
