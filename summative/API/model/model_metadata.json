@@ -1,0 +1,170 @@
+{
+  "best_model": "SGD Linear Regression",
+  "target": "FWBscore",
+  "target_range": [
+    14.0,
+    95.0
+  ],
+  "features": [
+    "FSscore",
+    "KHscore",
+    "PPHHSIZE",
+    "PPINCIMP",
+    "SAVINGSRANGES",
+    "agecat",
+    "PPEDUC",
+    "EMPLOY"
+  ],
+  "numeric_ranges": {
+    "FSscore": [
+      5.0,
+      85.0
+    ],
+    "KHscore": [
+      -2.053,
+      1.267
+    ],
+    "PPHHSIZE": [
+      1,
+      5
+    ]
+  },
+  "valid_values": {
+    "PPINCIMP": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "SAVINGSRANGES": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "agecat": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "PPEDUC": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "EMPLOY": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "PPHHSIZE": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  "value_labels": {
+    "PPINCIMP": {
+      "1": "<$20k",
+      "2": "$20-29.9k",
+      "3": "$30-39.9k",
+      "4": "$40-49.9k",
+      "5": "$50-59.9k",
+      "6": "$60-74.9k",
+      "7": "$75-99.9k",
+      "8": "$100-149.9k",
+      "9": "$150k+"
+    },
+    "SAVINGSRANGES": {
+      "1": "$0",
+      "2": "$1-99",
+      "3": "$100-999",
+      "4": "$1,000-4,999",
+      "5": "$5,000-19,999",
+      "6": "$20,000-74,999",
+      "7": "$75,000+"
+    },
+    "agecat": {
+      "1": "18-24",
+      "2": "25-34",
+      "3": "35-44",
+      "4": "45-54",
+      "5": "55-61",
+      "6": "62-69",
+      "7": "70-74",
+      "8": "75+"
+    },
+    "PPEDUC": {
+      "1": "< High school",
+      "2": "High school",
+      "3": "Some college/Associate",
+      "4": "Bachelor's",
+      "5": "Graduate/Professional"
+    },
+    "EMPLOY": {
+      "1": "Self-employed",
+      "2": "Full-time employee",
+      "3": "Part-time employee",
+      "4": "Homemaker",
+      "5": "Full-time student",
+      "6": "Sick/disabled",
+      "7": "Unemployed",
+      "8": "Retired"
+    },
+    "PPHHSIZE": {
+      "1": "1",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5+"
+    }
+  },
+  "metrics": {
+    "SGD Linear Regression": {
+      "Train RMSE": 9.743,
+      "Test RMSE": 9.763,
+      "Test MAE": 7.427,
+      "Test R2": 0.531
+    },
+    "Batch GD Linear Regression": {
+      "Train RMSE": 9.734,
+      "Test RMSE": 9.763,
+      "Test MAE": 7.417,
+      "Test R2": 0.531
+    },
+    "Random Forest": {
+      "Train RMSE": 6.787,
+      "Test RMSE": 9.711,
+      "Test MAE": 7.438,
+      "Test R2": 0.536
+    },
+    "Decision Tree": {
+      "Train RMSE": 8.956,
+      "Test RMSE": 10.197,
+      "Test MAE": 7.817,
+      "Test R2": 0.488
+    }
+  }
+}
