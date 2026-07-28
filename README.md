@@ -26,7 +26,7 @@ Example request body:
 ```
 
 ## YouTube video demo
-Demo (≤ 7 minutes): **https://youtu.be/7N-zqpvMVPk**
+Demo: **https://youtu.be/7N-zqpvMVPk**
 
 ## Dataset
 CFPB *National Financial Well-Being Survey 2016* Public Use File — a public U.S. government
