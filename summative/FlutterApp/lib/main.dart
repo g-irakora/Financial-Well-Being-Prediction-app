@@ -7,6 +7,12 @@ import 'package:http/http.dart' as http;
 const String kApiBaseUrl = 'https://financial-wellbeing-api.onrender.com';
 const String kPredictPath = '/predict';
 
+// ---- palette ----
+const _teal = Color(0xFF0F766E);
+const _tealLight = Color(0xFF14B8A6);
+const _bg = Color(0xFFEEF2F6);
+const _ink = Color(0xFF0F172A);
+
 void main() => runApp(const WellBeingApp());
 
 class WellBeingApp extends StatelessWidget {
@@ -18,8 +24,33 @@ class WellBeingApp extends StatelessWidget {
       title: 'Financial Well-Being Predictor',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2A7DE1)),
         useMaterial3: true,
+        scaffoldBackgroundColor: _bg,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: _teal,
+          primary: _teal,
+          brightness: Brightness.light,
+        ),
+        fontFamily: 'Roboto',
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.white,
+          isDense: true,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: const BorderSide(color: Color(0xFFD5DCE6)),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: const BorderSide(color: Color(0xFFD5DCE6)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: const BorderSide(color: _teal, width: 1.6),
+          ),
+        ),
       ),
       home: const PredictPage(),
     );
@@ -197,77 +228,111 @@ class _PredictPageState extends State<PredictPage> {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: scheme.primary,
-        foregroundColor: Colors.white,
-        title: const Text('Financial Well-Being Predictor'),
-        centerTitle: true,
-      ),
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 560),
-            child: ListView(
-              padding: const EdgeInsets.all(20),
-              children: [
-                const SizedBox(height: 4),
-                Text('Estimate a person\'s financial well-being score (0–100)',
-                    style: Theme.of(context).textTheme.titleMedium),
-                const SizedBox(height: 4),
-                Text('Fill the 8 fields, then tap Predict.',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(color: Colors.black54)),
-                const SizedBox(height: 16),
-
-                _numberField(_fsScore, 'Financial skill score (0–100)',
-                    'How strong their day-to-day money skills are', decimal: false),
-                _numberField(_khScore, 'Financial knowledge score (-4 to 4)',
-                    'Standardised financial-knowledge score', decimal: true),
-                _numberField(_hhSize, 'Household size (1–12)',
-                    'Number of people in the household', decimal: false),
-
-                _dropdown('Household income', _income, _incomeOpts,
-                    (v) => setState(() => _income = v)),
-                _dropdown('Total savings', _savings, _savingsOpts,
-                    (v) => setState(() => _savings = v)),
-                _dropdown('Age group', _age, _ageOpts,
-                    (v) => setState(() => _age = v)),
-                _dropdown('Education', _educ, _educOpts,
-                    (v) => setState(() => _educ = v)),
-                _dropdown('Employment status', _employ, _employOpts,
-                    (v) => setState(() => _employ = v)),
-
-                const SizedBox(height: 8),
-                SizedBox(
-                  height: 50,
-                  child: FilledButton.icon(
-                    onPressed: _loading ? null : _predict,
-                    icon: _loading
-                        ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(
-                                strokeWidth: 2, color: Colors.white))
-                        : const Icon(Icons.insights),
-                    label: Text(_loading ? 'Predicting…' : 'Predict'),
-                  ),
+      body: Column(
+        children: [
+          const _Header(),
+          Expanded(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 580),
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
+                  children: [
+                    _sectionCard(
+                      title: 'Financial profile',
+                      icon: Icons.savings_outlined,
+                      children: [
+                        _numberField(_fsScore, 'Financial skill score',
+                            '0–100 · everyday money skills',
+                            icon: Icons.psychology_outlined, decimal: false),
+                        _numberField(_khScore, 'Financial knowledge score',
+                            '-4 to 4 · standardised knowledge',
+                            icon: Icons.school_outlined, decimal: true),
+                        _dropdown('Household income', _income, _incomeOpts,
+                            Icons.payments_outlined,
+                            (v) => setState(() => _income = v)),
+                        _dropdown('Total savings', _savings, _savingsOpts,
+                            Icons.account_balance_outlined,
+                            (v) => setState(() => _savings = v)),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    _sectionCard(
+                      title: 'About you',
+                      icon: Icons.person_outline,
+                      children: [
+                        _dropdown('Age group', _age, _ageOpts,
+                            Icons.cake_outlined, (v) => setState(() => _age = v)),
+                        _dropdown('Education', _educ, _educOpts,
+                            Icons.menu_book_outlined,
+                            (v) => setState(() => _educ = v)),
+                        _dropdown('Employment status', _employ, _employOpts,
+                            Icons.work_outline,
+                            (v) => setState(() => _employ = v)),
+                        _numberField(_hhSize, 'Household size',
+                            '1–12 · people in the household',
+                            icon: Icons.groups_outlined, decimal: false),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    _predictButton(),
+                    const SizedBox(height: 18),
+                    _resultCard(),
+                  ],
                 ),
-                const SizedBox(height: 16),
-                _resultCard(scheme),
-              ],
+              ),
             ),
           ),
-        ),
+        ],
+      ),
+    );
+  }
+
+  // ---- section container ----
+  Widget _sectionCard({
+    required String title,
+    required IconData icon,
+    required List<Widget> children,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: const [
+          BoxShadow(
+              color: Color(0x0F0F172A), blurRadius: 18, offset: Offset(0, 6)),
+        ],
+      ),
+      padding: const EdgeInsets.fromLTRB(18, 16, 18, 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: _teal.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: _teal, size: 20),
+              ),
+              const SizedBox(width: 10),
+              Text(title,
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w700, color: _ink)),
+            ],
+          ),
+          const SizedBox(height: 14),
+          ...children,
+        ],
       ),
     );
   }
 
   Widget _numberField(TextEditingController c, String label, String hint,
-      {required bool decimal}) {
+      {required IconData icon, required bool decimal}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: TextField(
@@ -281,24 +346,24 @@ class _PredictPageState extends State<PredictPage> {
         decoration: InputDecoration(
           labelText: label,
           helperText: hint,
-          border: const OutlineInputBorder(),
-          isDense: true,
+          prefixIcon: Icon(icon, size: 20, color: _teal),
         ),
       ),
     );
   }
 
-  Widget _dropdown(String label, int value, List<Option> opts,
+  Widget _dropdown(String label, int value, List<Option> opts, IconData icon,
       ValueChanged<int> onChanged) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: DropdownButtonFormField<int>(
         initialValue: value,
         isExpanded: true,
+        icon: const Icon(Icons.expand_more, color: _teal),
+        borderRadius: BorderRadius.circular(14),
         decoration: InputDecoration(
           labelText: label,
-          border: const OutlineInputBorder(),
-          isDense: true,
+          prefixIcon: Icon(icon, size: 20, color: _teal),
         ),
         items: opts
             .map((o) => DropdownMenuItem(value: o.value, child: Text(o.label)))
@@ -310,43 +375,212 @@ class _PredictPageState extends State<PredictPage> {
     );
   }
 
-  Widget _resultCard(ColorScheme scheme) {
+  Widget _predictButton() {
+    return SizedBox(
+      height: 54,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: const LinearGradient(colors: [_teal, _tealLight]),
+          boxShadow: const [
+            BoxShadow(
+                color: Color(0x330F766E), blurRadius: 16, offset: Offset(0, 8)),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: _loading ? null : _predict,
+            child: Center(
+              child: _loading
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2.4, color: Colors.white))
+                  : const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.insights, color: Colors.white),
+                        SizedBox(width: 10),
+                        Text('Predict',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 17,
+                                fontWeight: FontWeight.w700)),
+                      ],
+                    ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // color band for a score
+  Color _bandColor(double s) {
+    if (s < 40) return const Color(0xFFDC2626);
+    if (s < 55) return const Color(0xFFF59E0B);
+    if (s < 70) return _teal;
+    return const Color(0xFF16A34A);
+  }
+
+  Widget _resultCard() {
     if (_resultText == null && _score == null) {
       return const SizedBox.shrink();
     }
-    final bg = _isError ? const Color(0xFFFDECEA) : const Color(0xFFEAF3FF);
-    final fg = _isError ? const Color(0xFFB3261E) : scheme.primary;
-    return Card(
-      color: bg,
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
+
+    if (_isError) {
+      return Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: const Color(0xFFFEF2F2),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: const Color(0xFFFECACA)),
+        ),
         padding: const EdgeInsets.all(18),
-        child: Column(
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Icon(_isError ? Icons.error_outline : Icons.check_circle_outline,
-                    color: fg),
-                const SizedBox(width: 8),
-                Text(_isError ? 'Cannot predict' : 'Predicted well-being score',
-                    style: TextStyle(
-                        color: fg, fontWeight: FontWeight.w600, fontSize: 16)),
-              ],
+            const Icon(Icons.error_outline, color: Color(0xFFB91C1C)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(_resultText ?? 'Something went wrong.',
+                  style: const TextStyle(
+                      color: Color(0xFFB91C1C),
+                      fontSize: 14,
+                      height: 1.35,
+                      fontWeight: FontWeight.w500)),
             ),
-            const SizedBox(height: 10),
-            if (_score != null)
-              Text('${_score!.toStringAsFixed(1)} / 100',
-                  style: TextStyle(
-                      color: fg, fontSize: 34, fontWeight: FontWeight.bold)),
-            if (_resultText != null) ...[
-              const SizedBox(height: 6),
-              Text(_resultText!,
-                  style: TextStyle(color: fg.withValues(alpha: 0.9), fontSize: 14)),
-            ],
           ],
         ),
+      );
+    }
+
+    final s = _score ?? 0;
+    final band = _bandColor(s);
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [band.withValues(alpha: 0.14), band.withValues(alpha: 0.04)],
+        ),
+        border: Border.all(color: band.withValues(alpha: 0.35)),
+      ),
+      padding: const EdgeInsets.all(22),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.check_circle, color: band, size: 20),
+              const SizedBox(width: 8),
+              Text('Predicted well-being score',
+                  style: TextStyle(
+                      color: band, fontWeight: FontWeight.w600, fontSize: 14)),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(s.toStringAsFixed(1),
+                  style: TextStyle(
+                      color: band,
+                      fontSize: 46,
+                      height: 1,
+                      fontWeight: FontWeight.w800)),
+              const SizedBox(width: 4),
+              const Padding(
+                padding: EdgeInsets.only(bottom: 6),
+                child: Text('/ 100',
+                    style: TextStyle(
+                        color: Color(0xFF64748B),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              value: (s / 100).clamp(0, 1),
+              minHeight: 10,
+              backgroundColor: Colors.white,
+              valueColor: AlwaysStoppedAnimation(band),
+            ),
+          ),
+          if (_resultText != null) ...[
+            const SizedBox(height: 14),
+            Text(_resultText!,
+                style: const TextStyle(
+                    color: Color(0xFF334155), fontSize: 14, height: 1.4)),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Gradient hero header at the top of the page.
+class _Header extends StatelessWidget {
+  const _Header();
+
+  @override
+  Widget build(BuildContext context) {
+    final top = MediaQuery.of(context).padding.top;
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.fromLTRB(22, top + 22, 22, 26),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF0B5A54), _teal, _tealLight],
+        ),
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.18),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Icon(Icons.trending_up_rounded,
+                    color: Colors.white, size: 26),
+              ),
+              const SizedBox(width: 14),
+              const Expanded(
+                child: Text('Financial Well-Being Predictor',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        height: 1.15)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Estimate a person\'s financial well-being score (0–100). '
+            'Fill the 8 fields, then tap Predict.',
+            style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.92),
+                fontSize: 13.5,
+                height: 1.4),
+          ),
+        ],
       ),
     );
   }
